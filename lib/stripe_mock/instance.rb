@@ -20,6 +20,7 @@ module StripeMock
       @@handlers.find {|h| method_url =~ h[:route] }
     end
 
+    include StripeMock::RequestHandlers::PaymentIntents
     include StripeMock::RequestHandlers::ExternalAccounts
     include StripeMock::RequestHandlers::Accounts
     include StripeMock::RequestHandlers::Balance
@@ -28,6 +29,7 @@ module StripeMock
     include StripeMock::RequestHandlers::Cards
     include StripeMock::RequestHandlers::Sources
     include StripeMock::RequestHandlers::Subscriptions # must be before Customers
+    include StripeMock::RequestHandlers::SubscriptionItems
     include StripeMock::RequestHandlers::Customers
     include StripeMock::RequestHandlers::Coupons
     include StripeMock::RequestHandlers::Disputes
@@ -36,6 +38,7 @@ module StripeMock
     include StripeMock::RequestHandlers::InvoiceItems
     include StripeMock::RequestHandlers::Orders
     include StripeMock::RequestHandlers::Plans
+    include StripeMock::RequestHandlers::Products
     include StripeMock::RequestHandlers::Refunds
     include StripeMock::RequestHandlers::Recipients
     include StripeMock::RequestHandlers::Transfers
@@ -43,10 +46,12 @@ module StripeMock
     include StripeMock::RequestHandlers::CountrySpec
     include StripeMock::RequestHandlers::Payouts
     include StripeMock::RequestHandlers::EphemeralKey
+    include StripeMock::RequestHandlers::TaxRates
 
     attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers,
-                :disputes, :events, :invoices, :invoice_items, :orders, :plans, :recipients,
-                :refunds, :transfers, :payouts, :subscriptions, :country_spec, :subscriptions_items
+                :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :plans, :recipients,
+                :refunds, :transfers, :payouts, :subscriptions, :country_spec, :subscriptions_items,
+                :products, :tax_rates
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -58,6 +63,7 @@ module StripeMock
       @card_tokens = {}
       @customers = {}
       @charges = {}
+      @payment_intents = {}
       @coupons = {}
       @disputes = Data.mock_disputes(['dp_05RsQX2eZvKYlo2C0FRTGSSA','dp_15RsQX2eZvKYlo2C0ERTYUIA', 'dp_25RsQX2eZvKYlo2C0ZXCVBNM', 'dp_35RsQX2eZvKYlo2C0QAZXSWE', 'dp_45RsQX2eZvKYlo2C0EDCVFRT', 'dp_55RsQX2eZvKYlo2C0OIKLJUY', 'dp_65RsQX2eZvKYlo2C0ASDFGHJ', 'dp_75RsQX2eZvKYlo2C0EDCXSWQ', 'dp_85RsQX2eZvKYlo2C0UJMCDET', 'dp_95RsQX2eZvKYlo2C0EDFRYUI'])
       @events = {}
@@ -65,13 +71,15 @@ module StripeMock
       @invoice_items = {}
       @orders = {}
       @plans = {}
+      @products = {}
       @recipients = {}
       @refunds = {}
       @transfers = {}
       @payouts = {}
       @subscriptions = {}
-      @subscriptions_items = []
+      @subscriptions_items = {}
       @country_spec = {}
+      @tax_rates = {}
 
       @debug = false
       @error_queue = ErrorQueue.new
